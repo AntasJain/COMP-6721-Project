@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 from PIL import Image, ImageEnhance
 import random
 from sklearn.model_selection import train_test_split
+import csv
 
 #Class with helper functions to generate image data in the desired format
 class Generate_data():
@@ -204,7 +205,7 @@ def enhance_brightness_contrast(image, brightness_factor=1.5, contrast_factor=0.
 
 def main():
         # Set a target number of samples
-        target_count = 1000
+        target_count = 750
 
         # Create a list to store augmented DataFrames
         augmented_dataframes = []
@@ -223,22 +224,27 @@ def main():
         #To get the data for neutral and angry expression
         data_icml_face_data_path = os.path.join('resources', 'icml_face_data.csv')
         data_icml_face_data = pd.read_csv(data_icml_face_data_path)
-
+        
         #To get the engaged emotion data
         generate_data = Generate_data()
         data_engaged = generate_data.read_image_data_as_array(os.path.join('resources', 'engaged_images'))
-
+        
         generate_data = Generate_data()
         data_bored = generate_data.read_image_data_as_array(os.path.join('resources', 'bored_cropped'))
-
+        
+        generate_data = Generate_data()
+        data_engaged_clicked = generate_data.read_image_data_as_array(os.path.join('resources', 'engaged_self_created'))
+        
+        
         generate_data = Generate_data()
         data_drowsy = generate_data.read_image_data_as_array(os.path.join('resources', 'drowsy_cropped'))
-
+        
         generate_data = Generate_data()
         data_looking_away = generate_data.read_image_data_as_array(os.path.join('resources', 'looking_away_cropped'))
-
+        
         print("Length of neutral data: ", len(data_icml_face_data[data_icml_face_data["emotion"]==6]))
-        print("Length of engaged data : ", len(data_engaged))
+        total_data_engaged = data_engaged+data_engaged_clicked
+        print("Length of engaged data : ", len(total_data_engaged))
         print("Length of bored data : ", len(data_bored)," Length of drowsy data : ", len(data_drowsy)," Length of looking away data : ", len(data_looking_away))
         data_bored = data_bored + data_drowsy + data_looking_away
         print("Length of combined bored data : ", len(data_bored))
@@ -261,7 +267,7 @@ def main():
 
         #create dataframe for engaged, emotion value = 2
         df_engaged = pd.DataFrame()
-        df_engaged["pixels"] = data_engaged
+        df_engaged["pixels"] = total_data_engaged
         df_engaged["emotion"] = 2
         print(df_engaged.head())
 
@@ -345,7 +351,7 @@ def main():
         length_of_image_arrays = full_data['pixels'].str.len()
         min_length = length_of_image_arrays.min()
         max_length = length_of_image_arrays.max()
-        print(min_length, max_length)
+        print("Min Len:", min_length,"Max Len:", max_length)
 
         generate_data.class_distribution_diagram(augmented_data_df)
 
@@ -478,6 +484,16 @@ def main():
         plt.show()
 
         generate_data.class_distribution_diagram(filtered_df)
+        np.set_printoptions(threshold=np.inf)
+        
+        length_of_image_arrays = filtered_df['pixels'].str.len()
+        min_length = length_of_image_arrays.min()
+        max_length = length_of_image_arrays.max()
+        print("Min Len Filtered:", min_length,"Max Len Filtered:", max_length)
+        filtered_df['pixels'] = filtered_df['pixels'].apply(lambda x: ','.join(map(str, x)))
+        filtered_df.to_csv("finalized_data.csv", index=False)
 
+        
+        print('Execution Complete')
 if __name__ == "__main__":
     main()
