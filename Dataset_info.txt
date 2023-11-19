@@ -13,3 +13,6 @@ Source: Kaggle Datasets
 License: Unknown
 URL: https://www.kaggle.com/datasets/joyee19/studentengagement
  
+Dataset 3 - Clicked Images
+Author: Antas Jain, Muskan Gupta, Ankita Shinde
+Source- Self
