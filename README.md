@@ -5,7 +5,8 @@
 ### 1. Resources
 
 #### - icml_face_data.csv
-- [Link to Dataset on GitHub](https://github.com/AntasJain/COMP-6721-Project)
+- [Link to Dataset on Google Drive](https://github.com/AntasJain/COMP-6721-Project](https://drive.google.com/file/d/1JFEbt_P0muFsT6chghMxcA87_2tImHc3/view?usp=share_link))
+- Due to high data size, it cannot be completely uploaded to the github
 
 The dataset is used to obtain expression data for neutral and angry classes.
 
