@@ -1,43 +1,76 @@
+import numpy as np
 import torch
-from PIL import Image
-from torchvision import transforms
-import matplotlib.pyplot as plt
 import pickle
+from PIL import Image
+import matplotlib.pyplot as plt
+from model_and_eval import FlexibleCNN
 
+def image_to_pixel_string(image_path):
+    # Load the image
+    image = Image.open(image_path)
 
+    # Convert the image to a NumPy array
+    image_array = np.array(image)
 
-image_path = "resources/engaged_images/0004.jpg"
-input_image = Image.open(image_path)
+    # Flatten the array to a 1D array
+    flat_array = image_array.flatten()
 
-transform = transforms.Compose([
-    transforms.Grayscale(num_output_channels=1),
-    transforms.Resize((48, 48)),
-    transforms.ToTensor(),
-])
+    # Convert the 1D array to a comma-separated string
+    pixel_string = ','.join(map(str, flat_array))
 
-# Applying the transformation to the input image
-input_tensor = transform(input_image)
-input_tensor = input_tensor.unsqueeze(0)  # Add a batch dimension
+    return pixel_string
 
-# Load  main model
-with open("mainmodel.pkl", "rb") as file:
-    loaded_model1 = pickle.load(file)
-loaded_model1.eval()  # Set the model to evaluation mode
+def preprocess_single_image(pixel_string):
+    # Convert the comma-separated string to a NumPy array
+    pixel_array = np.fromstring(pixel_string, sep=',', dtype=int)
 
-# Making the prediction
-with torch.no_grad():
-    output = loaded_model1(input_tensor)
+    # Reshape the array to match the input shape expected by the model
+    image_tensor = torch.tensor(pixel_array.reshape(1, 1, 48, 48), dtype=torch.float32)
 
-# Get the predicted class index
-_, predicted_class = torch.max(output, 1)
+    return image_tensor
 
-class_labels = ["Neutral", "Engaged/Focused", "Bored/Looking Away", "Angry"]
-predicted_label = class_labels[predicted_class.item()]
+def predict_label(model_path, image_tensor):
+    # Load the model
+    with open(model_path, "rb") as file:
+        loaded_model = pickle.load(file)
 
-# Print the predicted label
-print("Predicted Label:", predicted_label)
+    # Set the model to evaluation mode
+    loaded_model.eval()
 
-plt.imshow(input_image, cmap='gray')
-plt.title(f'Predicted Label: {predicted_label}')
-plt.axis('off')
-plt.show()
+    # Make a prediction for the single image
+    with torch.no_grad():
+        output = loaded_model(image_tensor)
+        _, predicted_label = torch.max(output, 1)
+
+    # Adjust the predicted label by adding 1
+    predicted_label = predicted_label.item() + 1
+
+    return predicted_label
+
+def display_image_with_label(image_path, predicted_label):
+    # Load the image
+    image = Image.open(image_path)
+
+    # Display the image with the predicted label
+    plt.imshow(image)
+    plt.title(f"Predicted Label: {predicted_label}")
+    plt.show()
+
+if __name__ == "__main__":
+    # Set the path to the saved main model
+    main_model_path = "mainmodel.pkl"
+
+    # Set the path to the image file
+    image_path = 'resources/output/label_2/image_398.png'
+
+    # Convert the image to a pixel string
+    pixel_string = image_to_pixel_string(image_path)
+
+    # Preprocess the single image
+    image_tensor = preprocess_single_image(pixel_string)
+
+    # Predict the label for the single image
+    predicted_label = predict_label(main_model_path, image_tensor)
+
+    # Display the image with the predicted label
+    display_image_with_label(image_path, predicted_label)
