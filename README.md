@@ -1,3 +1,8 @@
+
+# Project Title
+
+A brief description of what this project does and who it's for
+
 # Project README
 
 ## File Structure
@@ -16,6 +21,8 @@ The dataset is used to obtain expression data for neutral and angry classes.
     - drowsy_cropped
     - looking_away_cropped
 #### - Curated Self images
+
+From the Github Obtain the new file called Sampled_data.csv (for part 3), put it in the folder with the python files (not in resources).
 
 ### 2. data_processing.py
 
@@ -36,11 +43,16 @@ Output will display image with label as predicted label.
 Contains code to test on whole dataset, in this case we have by default put test.csv to be predicted.
 A csv file "mainmodel_predictions" will be created when you run the file with actual and predicted labels column.
 
+### 6. final_model_kfold.py
+
+Contains code for Final Model Training Using Early Stopping Techniques, K-Fold Cross Validation, and code for evaluation on Gender and Age  Bias and Mitigation
+
 ## How to run Complete project
-* Put all 4 python files in same folder as resources folder, run data_processing.py, as it finishes execution a curated, augmented and filtered dataset will be saved in folder,
+* Put all 5 python files in same folder as resources folder, run data_processing.py, as it finishes execution a curated, augmented and filtered dataset will be saved in folder,
 * Run model_and_eval.py - this will save the most efficient model as 'mainmodel.pkl' and 2 variants as 'variant1.pkl' and 'variant2.pkl'. This will also create confusion matrix and evaluation tables. test, train and val csvs will be saved to same folder.
 * To test an image, open the test_on_csv.py, put path to the image in variable and run code, output will be label predicted.
 * To test complete dataset, put test.csv or train.csv or finalized_data.csv in the variable and run the code, a csv file will be saved with predicted vs actual label and also accuracy will be displayed on the console.
+* To run k-fold and bias evaluation, put sampled_data.csv in the same folder, and run the file, all the analysis and final model selection will be executed.
 
 ## Necessary Libraries/Packages
 
