@@ -50,18 +50,29 @@ def predict_label(model_path, image_tensor):
 def display_image_with_label(image_path, predicted_label):
     # Load the image
     image = Image.open(image_path)
-
+    label_name = get_label(predicted_label)
     # Display the image with the predicted label
     plt.imshow(image)
-    plt.title(f"Predicted Label: {predicted_label}")
+    
+    plt.title(f"Predicted Label: {label_name}")
     plt.show()
-
+    
+def get_label(predicted_label):
+    if predicted_label == 1:
+        return "Neutral"
+    elif predicted_label == 2:
+        return "Engaged/Focus"
+    elif predicted_label == 3:
+        return "Bored/looking Away"
+    else:
+        return "Angry"
+    
 if __name__ == "__main__":
     # Set the path to the saved main model
     main_model_path = "mainmodel.pkl"
 
     # Set the path to the image file
-    image_path = 'resources/output/label_2/image_398.png'
+    image_path = 'Sample/engaged/13_.png'
 
     # Convert the image to a pixel string
     pixel_string = image_to_pixel_string(image_path)
